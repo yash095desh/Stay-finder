@@ -17,10 +17,10 @@ export default function RootLayout({ children }) {
     <ClerkProvider>
       <html lang="en">
         <body
-          className={inter.className}
+          className={`min-h-screen ${inter.className}`}
         >
           <Header/>
-          <main className=" pb-4 min-h-screen">
+          <main className=" pb-4 container mx-auto">
             {children}
           </main>
         </body>

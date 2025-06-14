@@ -3,6 +3,8 @@ import React from 'react'
 import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { Button } from './ui/button';
 import useCreateUser from '@/hooks/useCreateUser';
+import { LayoutDashboard } from 'lucide-react';
+import Link from 'next/link';
 
 const Header = () => {
   useCreateUser();
@@ -26,7 +28,18 @@ const Header = () => {
                     </SignUpButton>
               </SignedOut>
               <SignedIn>
+                    <div className='flex items-center gap-4'>
+                      <Button
+                      variant={'outline'}
+                      className={'px-4 py-2'}
+                      >
+                        <LayoutDashboard className=' size-4'/>
+                         <Link href={'/host-dashboard'} >
+                          Dashboard
+                         </Link>
+                      </Button>
                       <UserButton />
+                    </div>
               </SignedIn>
             </div>
         </div>
