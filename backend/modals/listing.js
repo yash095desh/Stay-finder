@@ -13,7 +13,12 @@ const listingSchema = new mongoose.Schema(
         message: "At least 3 images are required.",
       },
     },
-    location: { type: String, required: true },
+    location: {
+      country: { type: String, required: true },
+      state: { type: String }, // optional
+      city: { type: String, required: true },
+      address: { type: String, required: true },
+    },
     pricePerNight: { type: Number, required: true }, // changed to Number
     hostId: {
       type: mongoose.Schema.Types.ObjectId,

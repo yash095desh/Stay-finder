@@ -24,6 +24,9 @@ import { CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
+import axios from "axios";
+import { toast } from "sonner";
+import { useUserContext } from "@/hooks/userContext";
 
 const formSchema = z.object({
   title: z.string().min(1, "Listing title is required"),
@@ -43,6 +46,7 @@ const formSchema = z.object({
 function CreateListingPage() {
   const [countryName, setCountryName] = useState("");
   const [stateName, setStateName] = useState("");
+  const {user} = useUserContext();
 
   const {
     register,
@@ -72,12 +76,73 @@ function CreateListingPage() {
   const images = watch("images");
 
   const onSubmit = async (data) => {
-    console.log("Form Data", data);
+    try {
+     
+      if(!user?._id) return toast("User not found Please login again") ;
+      // Upload images to Cloudinary
+      const imageUrls = await Promise.all(
+        data.images.map((file) => handleUpload(file))
+      );
+
+      // Construct the final payload to send to backend
+      const payload = {
+        title: data.title,
+        description: data.description,
+        hostId: user?._id,
+        location: {
+          country: data.country,
+          state: data.state,
+          city: data.city,
+          address: data.address,
+        },
+        pricePerNight: data.pricePerNight,
+        availableFrom: data.availableFrom,
+        availableTo: data.availableUpto,
+        images: imageUrls,
+        // hostId: getCurrentUserId(), // Add if available
+      };
+
+      console.log("Payload to backend:", payload);
+
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/listing/create-new`,payload);
+
+      if(response.data.success){
+        console.log("Listing Created",response?.data?.listing)
+        toast.success("Listing Created !")
+      }
+
+      // Send to your backend here (e.g., using axios.post)
+      // await axios.post("/api/listings", payload);
+    } catch (error) {
+      console.log("Error in creating listing", error);
+    }
+  };
+
+  const handleUpload = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);  
+      formData.append("upload_preset", "Stay-finder");
+
+      const response = await axios.post(
+        "https://api.cloudinary.com/v1_1/yashdesh/image/upload",
+        formData
+      );
+
+      if (response.data.secure_url) {
+        return response.data.secure_url;
+      } else {
+        throw new Error("No secure_url returned from Cloudinary");
+      }
+    } catch (error) {
+      console.log("Error in uploading file", error);
+      throw error; // Rethrow so Promise.all fails properly
+    }
   };
 
   useEffect(() => {
-    console.log("images", images);
-  }, [images]);
+    console.log("User Context",user)
+  }, [user]);
 
   return (
     <div className="flex justify-center">

@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const connectToDB = require("./lib/connectToDB");
 const userRouter = require("./routes/userRoutes.js")
+const listingRoute = require("./routes/listingRoute.js");
 dotenv.config();
 
 
@@ -17,6 +18,7 @@ app.get((req,res)=>{
     res.status(200).send("Hello Server is running")
 })
 app.use("/api/user",userRouter)
+app.use("/api/listing",listingRoute)
 
 
 app.listen(PORT,()=>{

@@ -23,7 +23,6 @@ router.post("/storeUser", async(req,res)=>{
             await user.save();
         }
         
-        console.log("User Stored ", user)
         res.status(200).json({success:true, user})
 
     } catch (error) {

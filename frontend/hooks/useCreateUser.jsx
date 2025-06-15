@@ -2,12 +2,13 @@
 import { useUser } from "@clerk/nextjs";
 import axios from "axios";
 import React, { useEffect } from "react";
+import { useUserContext } from "./userContext";
 
 function useCreateUser() {
   const { user } = useUser();
+  const { setUser } = useUserContext();
 
   useEffect(() => {
-    console.log("hook called ", user)
     if (user) {
       const storeUser = async () => {
         try {
@@ -23,12 +24,15 @@ function useCreateUser() {
               }
             )
           
-          console.log("User Stored :", response);
+          // console.log("User Stored :", response?.data?.user);
+          setUser(response?.data?.user);
         } catch (error) {
           console.log("Error while storing the user", error);
         }
       };
       storeUser();
+    }else {
+      setUser(null); 
     }
   }, [user]);
 
