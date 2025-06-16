@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import Header from "@/components/Header";
 import { Toaster } from "@/components/ui/sonner";
 import { UserProvider } from "@/hooks/userContext";
+import Footer from "@/components/footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,6 +23,7 @@ export default function RootLayout({ children }) {
             <Toaster />
             <Header />
             <main className=" pb-4 container mx-auto">{children}</main>
+            <Footer/>
           </UserProvider>
         </body>
       </html>

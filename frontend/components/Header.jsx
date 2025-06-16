@@ -17,12 +17,12 @@ const Header = () => {
             <div className='flex items-center gap-4 '>
               <SignedOut>
                     <SignInButton >
-                        <Button className=' px-3 py-1' variant={'ghost'}>
+                        <Button className=' px-3 py-1 text-blue-600 hover:bg-blue-100 hover:text-blue-700' variant={'ghost'}>
                           Sign In
                         </Button>
                     </SignInButton>  
                     <SignUpButton >
-                      <Button className=' px-3 py-1 '>
+                      <Button className=' px-3 py-1 bg-blue-600 hover:bg-blue-700 '>
                         Sign Up
                       </Button>
                     </SignUpButton>
@@ -31,9 +31,9 @@ const Header = () => {
                     <div className='flex items-center gap-4'>
                       <Button
                       variant={'outline'}
-                      className={'px-4 py-2'}
+                      className={'px-4 py-2 border-blue-600 text-blue-600'}
                       >
-                        <LayoutDashboard className=' size-4'/>
+                        <LayoutDashboard className=' size-4 text-blue-600'/>
                          <Link href={'/host-dashboard'} >
                           Dashboard
                          </Link>
