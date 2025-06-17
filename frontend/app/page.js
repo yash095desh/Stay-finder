@@ -19,6 +19,7 @@ import {
   Utensils,
   Wifi,
 } from "lucide-react";
+import SearchBox from "@/components/SearchBox";
 
 export default function Home() {
 
@@ -61,9 +62,12 @@ export default function Home() {
     },
   ];
   return (
-    <div className="">
+    <div className="px-4 md:px-0">
       {/* HeroImage Section  */}
-      <section className=" py-20 flex flex-col gap-6">
+      <section className=" my-20 flex flex-col gap-6 relative">
+        <div className=" md:absolute md:h-full w-full md:max-w-sm flex items-center md:justify-center md:right-6 z-10">
+          <SearchBox/>
+        </div>
         <div>
           <h1 className=" text-4xl font-extrabold tracking-tighter mb-2">
             Experience the Best <br /> Stays Around the World
@@ -83,6 +87,7 @@ export default function Home() {
             className="object-cover "
           />
         </div>
+        
       </section>
 
       {/* Listing Section  */}
@@ -133,11 +138,11 @@ export default function Home() {
             Gallery
           </Badge>
         </div>
-        <div className=" flex items-start justify-between gap-4">
+        <div className=" flex flex-col md:flex-row items-start justify-between gap-4">
           <h1 className=" text-xl font-bold tracking-tighter">
             Explore the Beauty <br /> of Our Stays Through the Gallery
           </h1>
-          <p className="font-medium text-muted-foreground mb-6 text-end">
+          <p className="font-medium text-muted-foreground mb-6 md:text-end">
             Take a closer look at the charm, comfort, and character <br /> of
             our properties. Each photo captures the unique experiences waiting
             for you
@@ -197,11 +202,11 @@ export default function Home() {
             Features
           </Badge>
         </div>
-        <div className=" flex items-start justify-between gap-4">
+        <div className=" flex flex-col md:flex-row items-start justify-between gap-4">
           <h1 className=" text-xl font-bold tracking-tighter">
             Why Guests Love <br /> Staying With Us
           </h1>
-          <p className="font-medium text-muted-foreground mb-6 text-end">
+          <p className="font-medium text-muted-foreground mb-6 md:text-end">
             From handpicked amenities to exceptional service, our properties{" "}
             <br /> are thoughtfully designed to offer you comfort, convenience,
             and a stay that feels like home—no matter where you are.

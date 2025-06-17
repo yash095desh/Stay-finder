@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
           <UserProvider>
             <Toaster />
             <Header />
-            <main className=" pb-4 container mx-auto">{children}</main>
+            <main className=" pb-4 container mx-auto ">{children}</main>
             <Footer/>
           </UserProvider>
         </body>

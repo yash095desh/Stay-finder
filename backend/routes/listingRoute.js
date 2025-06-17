@@ -77,5 +77,64 @@ router.post("/create-new", async (req, res) => {
   }
 });
 
+router.get("/search", async (req, res) => {
+  try {
+    let { location, price, date } = req.query;
+    console.log(location, price, date)
+    const query = {};
+
+    // Convert 'null' or empty strings to actual undefined
+    location = location && location !== "null" && location.trim() !== "" ? location : undefined;
+    price = price && price !== "null" && price.trim() !== "" ? price : undefined;
+    date = date && date !== "null" && date.trim() !== "" ? date : undefined;
+
+
+    // Location filter
+    if (location && location.trim() !== "") {
+      query.$or = [
+        { "location.city": { $regex: location, $options: "i" } },
+        { "location.address": { $regex: location, $options: "i" } },
+        { "location.state": { $regex: location, $options: "i" } },
+        { "location.country": { $regex: location, $options: "i" } },
+      ];
+    }
+
+    // Price filter
+    if (price && price.includes("-")) {
+      const [min, max] = price.split("-").map(Number);
+      query.pricePerNight = {
+        $gte: !isNaN(min) ? min : 0,
+        $lte: !isNaN(max) ? max : Number.MAX_SAFE_INTEGER,
+      };
+    }
+
+    // Date filter
+    if (date && !isNaN(new Date(date))) {
+      const parsedDate = new Date(date);
+
+      // Ensure both `availableFrom` and `availableTo` exist and cover the selected date
+      query.availableFrom = { $lte: parsedDate };
+      query.availableTo = { $gte: parsedDate };
+    }
+
+    // If no filters are provided, return all listings
+    const isEmptyQuery =
+      !location && !price && (!date || isNaN(new Date(date)));
+    
+    console.log("emptyQuery",isEmptyQuery)
+    const listings = isEmptyQuery
+      ? await Listing.find({})
+      : await Listing.find(query);
+
+    res.status(200).json({ success: true, listings });
+  } catch (error) {
+    console.error("Error in getting listings:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+
+
+
 
 module.exports = router;
