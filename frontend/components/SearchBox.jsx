@@ -88,7 +88,7 @@ const SearchBox = () => {
         </div>
 
         {/* Submit Button */}
-        <Button className="w-full mt-4" onClick={handleSearch}>
+        <Button className="w-full mt-4 bg-blue-500 hover:bg-blue-600" onClick={handleSearch}>
           Search Stays
         </Button>
       </CardContent>

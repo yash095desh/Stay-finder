@@ -133,6 +133,24 @@ router.get("/search", async (req, res) => {
   }
 });
 
+router.get("/:id",async(req, res)=>{
+  try {
+    const { id } = req.params;
+
+    if(!id){
+      throw new Error("Listing Id not provided");
+    }
+
+    const listing = await Listing.findById(id).populate("hostId");
+
+    res.status(200).json({success: true , listing})
+
+  } catch (error) {
+    console.log("Error in fetching listing:",error)
+    res.status(500).json({success:false, message: error.message})
+  }
+})
+
 
 
 
