@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Card,
   CardContent,
@@ -20,13 +21,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import axios from "axios";
 import { toast } from "sonner";
 import { useUserContext } from "@/hooks/userContext";
+import { useParams, useRouter } from "next/navigation";
 
 const formSchema = z.object({
   title: z.string().min(1, "Listing title is required"),
@@ -38,13 +40,13 @@ const formSchema = z.object({
   pricePerNight: z.number().min(1, "Price per Night required"),
   availableFrom: z.date().min(new Date(), "Available from Date is required"),
   availableUpto: z.date().min(new Date(), "Available Upto date is required"),
-  images: z
-    .array(z.instanceof(File))
-    .min(3, { message: "At least 3 images are required." }),
+  images: z.array(z.union([z.instanceof(File), z.string()])).min(1),
 });
 
-function CreateListingPage() {
-  const {user} = useUserContext();
+function EditListingPage() {
+  const { user } = useUserContext();
+  const { id } = useParams();
+  const router = useRouter();
 
   const {
     register,
@@ -66,27 +68,66 @@ function CreateListingPage() {
       availableUpto: undefined,
       images: [],
     },
-    mode: "onBlur", // optional, improves UX
   });
 
   const availableFrom = watch("availableFrom");
   const availableUpto = watch("availableUpto");
   const images = watch("images");
 
+  useEffect(() => {
+    if (!id) return;
+    const fetchListing = async () => {
+      try {
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/api/listing/${id}`
+        );
+        const data = res.data?.listing;
+
+        setValue("title", data.title);
+        setValue("description", data.description);
+        setValue("country", data.location.country);
+        setValue("state", data.location.state);
+        setValue("city", data.location.city);
+        setValue("address", data.location.address);
+        setValue("pricePerNight", data.pricePerNight);
+        setValue("availableFrom", new Date(data.availableFrom));
+        setValue("availableUpto", new Date(data.availableTo));
+        setValue("images", data.images);
+      } catch (err) {
+        console.error("Failed to fetch listing", err);
+        toast.error("Failed to load listing.");
+      }
+    };
+    fetchListing();
+  }, [id, setValue]);
+
+  const handleUpload = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "Stay-finder");
+
+    const res = await axios.post(
+      "https://api.cloudinary.com/v1_1/yashdesh/image/upload",
+      formData
+    );
+    return res.data.secure_url;
+  };
+
   const onSubmit = async (data) => {
     try {
-     
-      if(!user?._id) return toast("User not found Please login again") ;
-      // Upload images to Cloudinary
-      const imageUrls = await Promise.all(
-        data.images.map((file) => handleUpload(file))
+      if (!user?._id) return toast("User not found. Please log in again.");
+
+      const uploadedImages = await Promise.all(
+        data.images.map(async (img) => {
+          if (typeof img === "string") return img;
+          return await handleUpload(img);
+        })
       );
 
-      // Construct the final payload to send to backend
       const payload = {
         title: data.title,
         description: data.description,
-        hostId: user?._id,
+        hostId: user._id,
         location: {
           country: data.country,
           state: data.state,
@@ -96,63 +137,41 @@ function CreateListingPage() {
         pricePerNight: data.pricePerNight,
         availableFrom: data.availableFrom,
         availableTo: data.availableUpto,
-        images: imageUrls,
-        // hostId: getCurrentUserId(), // Add if available
+        images: uploadedImages,
       };
 
-      console.log("Payload to backend:", payload);
-
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/listing/create-new`,payload);
-
-      if(response.data.success){
-        console.log("Listing Created",response?.data?.listing)
-        toast.success("Listing Created !")
-      }
-
-      // Send to your backend here (e.g., using axios.post)
-      // await axios.post("/api/listings", payload);
-    } catch (error) {
-      console.log("Error in creating listing", error);
-    }
-  };
-
-  const handleUpload = async (file) => {
-    try {
-      const formData = new FormData();
-      formData.append("file", file);  
-      formData.append("upload_preset", "Stay-finder");
-
-      const response = await axios.post(
-        "https://api.cloudinary.com/v1_1/yashdesh/image/upload",
-        formData
+      const res = await axios.put(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/listing/${id}`,
+        payload
       );
 
-      if (response.data.secure_url) {
-        return response.data.secure_url;
-      } else {
-        throw new Error("No secure_url returned from Cloudinary");
+      if (res.data.success) {
+        toast.success("Listing updated successfully!");
+        router.push("/host-dashboard");
       }
-    } catch (error) {
-      console.log("Error in uploading file", error);
-      throw error; // Rethrow so Promise.all fails properly
+    } catch (err) {
+      console.error("Error updating listing", err);
+      toast.error("Error updating listing.");
     }
   };
 
-  useEffect(() => {
-    console.log("User Context",user)
-  }, [user]);
+  const removeImage = (target) => {
+    const newImages = images.filter((img) => {
+      if (typeof img === "string") return img !== target;
+      return img.name !== target.name;
+    });
+    setValue("images", newImages, { shouldValidate: true });
+  };
 
   return (
     <div className="flex justify-center">
       <Card className="w-full max-w-4xl my-14">
-        <CardHeader className="mb-4">
-          <CardTitle className="text-4xl font-extrabold text-primary mb-2 tracking-tighter">
-            Create New Listing
+        <CardHeader>
+          <CardTitle className="text-4xl font-extrabold text-primary">
+            Edit Listing
           </CardTitle>
-          <CardDescription className="text-muted-foreground font-medium text-lg tracking-tight leading-snug">
-            Use this form to share your space with others. <br />
-            Once submitted, your property will be visible to users looking for a
-            place to stay.
+          <CardDescription>
+            Modify your existing listing details
           </CardDescription>
         </CardHeader>
 
@@ -327,7 +346,7 @@ function CreateListingPage() {
             </div>
 
             <div className="space-y-2 w-full">
-              <Label htmlFor="images">Upload Images (Min: 3)</Label>
+              <Label htmlFor="images">Upload Images (Min: 1)</Label>
               <Input
                 id="images"
                 type="file"
@@ -336,23 +355,37 @@ function CreateListingPage() {
                 className="cursor-pointer"
                 onChange={(e) => {
                   const files = Array.from(e.target.files || []);
-                  setValue("images", files, {
+                  const existingImages = images.filter(
+                    (img) => typeof img === "string"
+                  );
+                  setValue("images", [...existingImages, ...files], {
                     shouldValidate: true,
                   });
                 }}
               />
 
-              {/* Optional: Image preview */}
               {images && images.length > 0 && (
-                <div className="grid grid-cols-3 gap-2 mt-2">
-                  {Array.from(images).map((file, idx) => (
-                    <img
-                      key={idx}
-                      src={URL.createObjectURL(file)}
-                      alt={`preview-${idx}`}
-                      className="h-24 w-full object-cover rounded-md border"
-                    />
-                  ))}
+                <div className="grid grid-cols-3 gap-3 mt-2">
+                  {images.map((img, idx) => {
+                    const isUrl = typeof img === "string";
+                    const src = isUrl ? img : URL.createObjectURL(img);
+                    return (
+                      <div key={idx} className="relative group">
+                        <img
+                          src={src}
+                          alt={`preview-${idx}`}
+                          className="h-28 w-full object-cover rounded-md border"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(img)}
+                          className="absolute top-1 right-1 bg-black/60 text-white p-1 rounded-full hover:bg-black"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
 
@@ -365,10 +398,10 @@ function CreateListingPage() {
           <CardFooter className="justify-end mt-6">
             <Button
               type="submit"
-              className="px-10 py-5 bg-primary text-white rounded-md tracking-tight "
+              className="px-10 py-5 bg-primary text-white rounded-md"
               disabled={isSubmitting}
             >
-              Submit Listing
+              Update Listing
             </Button>
           </CardFooter>
         </form>
@@ -377,4 +410,4 @@ function CreateListingPage() {
   );
 }
 
-export default CreateListingPage;
+export default EditListingPage;

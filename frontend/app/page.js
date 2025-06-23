@@ -1,15 +1,4 @@
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import listings from "../test.listings";
-import ListingCard from "@/components/ListingCard";
 import { Badge } from "@/components/ui/badge";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   BrushCleaning,
@@ -19,9 +8,26 @@ import {
   Utensils,
   Wifi,
 } from "lucide-react";
+import Image from "next/image";
+import ListingCard from "@/components/ListingCard";
 import SearchBox from "@/components/SearchBox";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
-export default function Home() {
+export default async function Home() {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_SERVER_URL}/api/listing/search`,
+    {
+      cache: "no-store", // fetch fresh data
+    }
+  );
+  const data = await res.json();
+  const listings = data?.listings?.slice(0, 5) || [];
 
   const features = [
     {
@@ -61,12 +67,13 @@ export default function Home() {
       icon: ClockFadingIcon,
     },
   ];
+
   return (
     <div className="px-4 md:px-0">
-      {/* HeroImage Section  */}
+      {/* HeroImage Section */}
       <section className=" my-20 flex flex-col gap-6 relative">
         <div className=" md:absolute md:h-full w-full md:max-w-sm flex items-center md:justify-center md:right-6 z-10">
-          <SearchBox/>
+          <SearchBox />
         </div>
         <div>
           <h1 className=" text-4xl font-extrabold tracking-tighter mb-2">
@@ -87,52 +94,55 @@ export default function Home() {
             className="object-cover "
           />
         </div>
-        
       </section>
 
-      {/* Listing Section  */}
-      <section className=" w-full my-20 px-10">
-        <div className="flex justify-center">
-          <Badge
-            className={"border-blue-500 text-blue-500 text-center px-4 py-2 mb-4"}
-            variant={"outline"}
-          >
-            Our Rooms
-          </Badge>
-        </div>
-        <h1 className=" text-xl font-bold tracking-tighter">
-          Featured Stays Just for You
-        </h1>
-        <p className="font-medium text-muted-foreground mb-6">
-          Discover popular properties handpicked for comfort, style, and
-          unforgettable experiences.
-        </p>
+      {/* Listing Section */}
+      {listings?.length > 0 && (
+        <section className=" w-full my-20 px-10">
+          <div className="flex justify-center">
+            <Badge
+              className={
+                "border-blue-500 text-blue-500 text-center px-4 py-2 mb-4"
+              }
+              variant={"outline"}
+            >
+              Our Rooms
+            </Badge>
+          </div>
+          <h1 className=" text-xl font-bold tracking-tighter">
+            Featured Stays Just for You
+          </h1>
+          <p className="font-medium text-muted-foreground mb-6">
+            Discover popular properties handpicked for comfort, style, and
+            unforgettable experiences.
+          </p>
 
-        <Carousel
-          opts={{
-            align: "start",
-          }}
-          className="w-full"
-        >
-          <CarouselContent>
-            {listings.map((item, index) => (
-              <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                <div className="p-1">
-                  <ListingCard data={item} />
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
-      </section>
+          <Carousel opts={{ align: "start" }} className="w-full">
+            <CarouselContent>
+              {listings?.map((item) => (
+                <CarouselItem
+                  key={item?._id}
+                  className="md:basis-1/2 lg:basis-1/3"
+                >
+                  <div className="p-1">
+                    <ListingCard data={item} />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
+        </section>
+      )}
 
-      {/* Gallery Section  */}
+      {/* Gallery Section */}
       <section className=" w-full my-20">
         <div className="flex justify-center">
           <Badge
-            className={"border-blue-500 text-blue-500 text-center px-4 py-2 mb-4"}
+            className={
+              "border-blue-500 text-blue-500 text-center px-4 py-2 mb-4"
+            }
             variant={"outline"}
           >
             Gallery
@@ -150,25 +160,22 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-          {/* Left large image */}
           <div className="row-span-1 md:row-span-2">
             <Image
               src="/galleryImages1.jpg"
               alt="gallery-img-1"
               width={600}
               height={600}
-              className="w-full h-full object-cover rounded-xl aspect-[4/5]" // flatter than 5/6
+              className="w-full h-full object-cover rounded-xl aspect-[4/5]"
             />
           </div>
-
-          {/* Top right split into two */}
           <div className="grid grid-cols-1 gap-4">
             <Image
               src="/galleryImages2.jpg"
               alt="gallery-img-2"
               width={400}
               height={300}
-              className="w-full h-full object-cover rounded-xl aspect-[6/5]" // flatter than 5/4
+              className="w-full h-full object-cover rounded-xl aspect-[6/5]"
             />
             <Image
               src="/galleryImages3.jpg"
@@ -178,25 +185,25 @@ export default function Home() {
               className="w-full h-full object-cover rounded-xl aspect-[6/5]"
             />
           </div>
-
-          {/* Bottom wide image */}
           <div className="col-span-2 md:col-span-1">
             <Image
               src="/galleryImages4.jpg"
               alt="gallery-img-4"
               width={800}
               height={300}
-              className="w-full h-full object-cover rounded-xl aspect-[8/3]" // even flatter
+              className="w-full h-full object-cover rounded-xl aspect-[8/3]"
             />
           </div>
         </div>
       </section>
 
-      {/* Features Section  */}
+      {/* Features Section */}
       <section className=" w-full my-20 flex flex-col gap-4">
         <div className="flex justify-center">
           <Badge
-            className={"border-blue-500 text-blue-500 text-center px-4 py-2 mb-4"}
+            className={
+              "border-blue-500 text-blue-500 text-center px-4 py-2 mb-4"
+            }
             variant={"outline"}
           >
             Features
@@ -232,9 +239,6 @@ export default function Home() {
           })}
         </div>
       </section>
-
-
-
     </div>
   );
 }

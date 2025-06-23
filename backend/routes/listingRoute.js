@@ -80,7 +80,6 @@ router.post("/create-new", async (req, res) => {
 router.get("/search", async (req, res) => {
   try {
     let { location, price, date } = req.query;
-    console.log(location, price, date)
     const query = {};
 
     // Convert 'null' or empty strings to actual undefined
@@ -121,7 +120,6 @@ router.get("/search", async (req, res) => {
     const isEmptyQuery =
       !location && !price && (!date || isNaN(new Date(date)));
     
-    console.log("emptyQuery",isEmptyQuery)
     const listings = isEmptyQuery
       ? await Listing.find({})
       : await Listing.find(query);
@@ -150,6 +148,114 @@ router.get("/:id",async(req, res)=>{
     res.status(500).json({success:false, message: error.message})
   }
 })
+
+router.put("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      title,
+      description,
+      location,
+      pricePerNight,
+      hostId,
+      availableFrom,
+      availableTo,
+      images,
+    } = req.body;
+
+    if (
+      !title?.trim() ||
+      !description?.trim() ||
+      !hostId ||
+      !availableFrom ||
+      !availableTo
+    ) {
+      throw new Error("All basic details must be provided");
+    }
+
+    if (
+      !location ||
+      !location.country?.trim() ||
+      !location.city?.trim() ||
+      !location.address?.trim()
+    ) {
+      throw new Error("Country, city, and address are required in location");
+    }
+
+    if (!pricePerNight || isNaN(Number(pricePerNight))) {
+      throw new Error("Price per night is not valid");
+    }
+
+    if (!images || images.length < 1) {
+      throw new Error("At least 1 image is required");
+    }
+
+    if (new Date(availableFrom) > new Date(availableTo)) {
+      throw new Error("Available To date must be after Available From");
+    }
+
+    const updatedListing = await Listing.findByIdAndUpdate(
+      id,
+      {
+        title: title.trim(),
+        description: description.trim(),
+        location: {
+          country: location.country.trim(),
+          state: location.state?.trim() || "",
+          city: location.city.trim(),
+          address: location.address.trim(),
+        },
+        pricePerNight: Number(pricePerNight),
+        hostId,
+        availableFrom,
+        availableTo,
+        images,
+      },
+      { new: true }
+    );
+
+    if (!updatedListing) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Listing not found" });
+    }
+
+    res
+      .status(200)
+      .json({ success: true, message: "Listing updated", listing: updatedListing });
+  } catch (error) {
+    console.error("Error in updating listing:", error.message);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Listing ID is required" });
+    }
+
+    const deletedListing = await Listing.findByIdAndDelete(id);
+
+    if (!deletedListing) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Listing not found" });
+    }
+
+    res
+      .status(200)
+      .json({ success: true, message: "Listing deleted successfully" });
+  } catch (error) {
+    console.error("Error in deleting the listing:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 
 
 
