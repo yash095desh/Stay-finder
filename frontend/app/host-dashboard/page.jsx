@@ -43,6 +43,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
+import { useAuth } from "@clerk/nextjs";
 
 const Page = () => {
   const [viewMode, setViewMode] = useState("month");
@@ -58,6 +59,13 @@ const Page = () => {
 
   const { user } = useUserContext();
   const router = useRouter();
+  const { isLoaded, isSignedIn } = useAuth();
+
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      router.push("/sign-in");
+    }
+  }, [isLoaded, isSignedIn]);
 
   useEffect(() => {
     if (!user?._id) return;

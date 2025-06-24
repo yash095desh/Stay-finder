@@ -11,6 +11,7 @@ import axios from 'axios';
 import { useUserContext } from '@/hooks/userContext';
 import { EditProfileModal } from '@/components/EditProfileModal';
 import { BecomeHostModal } from '@/components/becomeHostModal';
+import { useAuth } from '@clerk/nextjs';
 
 const Page = () => {
   const { user } = useUserContext();
@@ -20,6 +21,13 @@ const Page = () => {
   const [showHost, setShowHost] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const router = useRouter();
+  const { isLoaded, isSignedIn } = useAuth();
+
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      router.push("/sign-in");
+    }
+  }, [isLoaded, isSignedIn]);
 
   const refetchUser = () => setRefresh((prev) => !prev);
 

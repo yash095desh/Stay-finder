@@ -8,12 +8,20 @@ import { MapPin, User, IndianRupee, BadgeCheck } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { format, differenceInDays } from 'date-fns';
+import { useAuth } from '@clerk/nextjs';
 
 const Page = () => {
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const { id : bookingId } = useParams();
   const router = useRouter();
+  const { isLoaded, isSignedIn } = useAuth();
+
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      router.push("/sign-in");
+    }
+  }, [isLoaded, isSignedIn]);
 
   useEffect(() => {
     const fetchBooking = async () => {

@@ -29,6 +29,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useUserContext } from "@/hooks/userContext";
 import { useParams, useRouter } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
 
 const formSchema = z.object({
   title: z.string().min(1, "Listing title is required"),
@@ -47,6 +48,13 @@ function EditListingPage() {
   const { user } = useUserContext();
   const { id } = useParams();
   const router = useRouter();
+  const { isLoaded, isSignedIn } = useAuth();
+
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      router.push("/sign-in");
+    }
+  }, [isLoaded, isSignedIn]);
 
   const {
     register,
