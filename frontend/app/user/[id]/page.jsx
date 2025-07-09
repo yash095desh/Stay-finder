@@ -80,7 +80,7 @@ const Page = () => {
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-medium">₹{booking.totalPrice}</p>
-                      <span className="text-xs text-green-600 font-medium">{booking.status}</span>
+                      <span className={`text-xs ${booking.status === "pending"?"text-yellow-500":booking.status === "confirmed"?"text-green-600":"text-red-600"} font-medium`}>{booking.status}</span>
                     </div>
                   </div>
                 </CardContent>

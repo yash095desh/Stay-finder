@@ -9,25 +9,10 @@ import {
   Wifi,
 } from "lucide-react";
 import Image from "next/image";
-import ListingCard from "@/components/ListingCard";
 import SearchBox from "@/components/SearchBox";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
+import ListingSection from "@/components/ListingSection";
 
 export default async function Home() {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/api/listing/search`,
-    {
-      cache: "no-store", // fetch fresh data
-    }
-  );
-  const data = await res.json();
-  const listings = data?.listings?.slice(0, 5) || [];
 
   const features = [
     {
@@ -97,44 +82,7 @@ export default async function Home() {
       </section>
 
       {/* Listing Section */}
-      {listings?.length > 0 && (
-        <section className=" w-full my-20 px-10">
-          <div className="flex justify-center">
-            <Badge
-              className={
-                "border-blue-500 text-blue-500 text-center px-4 py-2 mb-4"
-              }
-              variant={"outline"}
-            >
-              Our Rooms
-            </Badge>
-          </div>
-          <h1 className=" text-xl font-bold tracking-tighter">
-            Featured Stays Just for You
-          </h1>
-          <p className="font-medium text-muted-foreground mb-6">
-            Discover popular properties handpicked for comfort, style, and
-            unforgettable experiences.
-          </p>
-
-          <Carousel opts={{ align: "start" }} className="w-full">
-            <CarouselContent>
-              {listings?.map((item) => (
-                <CarouselItem
-                  key={item?._id}
-                  className="md:basis-1/2 lg:basis-1/3"
-                >
-                  <div className="p-1">
-                    <ListingCard data={item} />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
-        </section>
-      )}
+      <ListingSection/>
 
       {/* Gallery Section */}
       <section className=" w-full my-20">

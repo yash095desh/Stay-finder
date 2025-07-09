@@ -2,6 +2,7 @@ const express = require("express");
 const Booking = require("../modals/bookings");
 const User = require("../modals/user");
 const Listing = require("../modals/listing");
+const { inngest } = require("../inngest/client");
  
 const router = express.Router();
 
@@ -13,7 +14,10 @@ router.get("/getAll/:listingId", async (req, res) => {
       return res.status(400).json({ success: false, message: "Listing ID not provided" });
     }
 
-    const bookings = await Booking.find({ listingId })             
+   const bookings = await Booking.find({
+      listingId,
+      status: { $in: ["confirmed", "pending"] }
+    });          
 
     res.status(200).json({ success: true, bookings });
 
@@ -55,10 +59,11 @@ router.get("/check/:userId/:listingId", async (req, res) => {
       return res.status(400).json({ success: false, message: "userId and listingId required" });
     }
 
+    // Find any pending or confirmed (future) booking
     const booking = await Booking.findOne({
       userId,
       listingId,
-      endDate: { $lte: new Date() }, // ensure endDate is in the past
+      status: { $in: ["pending", "confirmed"] },
     })
       .populate("userId", "name email")
       .populate("listingId", "title location");
@@ -73,6 +78,7 @@ router.get("/check/:userId/:listingId", async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 });
+
 
 router.get("/user/:userId",async(req, res)=>{
   try {
@@ -112,10 +118,18 @@ router.post("/create-new", async (req, res) => {
 
     
     const overlapping = await Booking.findOne({
-      listingId,
-      $or: [
-        { startDate: { $lt: end }, endDate: { $gt: start } },
-      ],
+      $and: [
+        { listingId },
+        { status: { $in: ["confirmed", "pending"] } },
+        {
+          $or: [
+            {
+              startDate: { $lt: end },
+              endDate: { $gt: start }
+            }
+          ]
+        }
+      ]
     });
 
     if (overlapping) {
@@ -136,10 +150,14 @@ router.post("/create-new", async (req, res) => {
       startDate: start,
       endDate: end,
       totalPrice: totalAmount,
-      status: "confirmed",
     });
 
     await booking.save();
+
+    await inngest.send({
+      name: "booking/reserved",
+      data:{bookingId: booking._id.toString()}
+    })
 
     res.status(200).json({ success: true, booking });
   } catch (error) {
@@ -147,6 +165,24 @@ router.post("/create-new", async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 });
+
+router.delete("/:id", async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
+
+    if (booking.status === "confirmed") {
+      return res.status(400).json({ message: "Cannot cancel confirmed booking" });
+    }
+
+    await Booking.findByIdAndDelete(req.params.id);
+    res.status(200).json({ success: true, message: "Booking cancelled" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 
 module.exports = router;
