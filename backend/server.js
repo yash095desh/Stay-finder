@@ -36,7 +36,7 @@ app.use("/api/bookings", bookingsRoute);
 app.use("/api/dashboard/", dashboardRoute);
 app.use("/api/payment", paymentRoute);
 
-app.use("/api/inngest", serve({ client: inngest, functions: [expireBooking] }));
+app.use("/api/inngest", serve({ client: inngest, functions: [expireBooking] ,signingKey: process.env.INNGEST_SIGNING_KEY}));
 
 app.listen(PORT, () => {
   console.log(`Server is running on port :${PORT}⚡`);
