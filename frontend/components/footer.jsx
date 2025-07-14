@@ -2,9 +2,10 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 px-6 py-12 bg-slate-50 w-full text-sm text-muted-foreground">
-      {/* Left: About / Brand / Text */}
-      <div className="col-span-1">
+    <footer className=" bg-slate-50 w-full ">
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 px-6 py-12 container mx-auto text-sm text-muted-foreground ">
+
+      <div className="col-span-1 ">
         <h2 className="text-lg font-semibold text-foreground mb-2">
           StayFinder
         </h2>
@@ -50,6 +51,8 @@ const Footer = () => {
           <li>24/7 Support</li>
           <li>Secure Payments</li>
         </ul>
+      </div>
+      
       </div>
     </footer>
   );

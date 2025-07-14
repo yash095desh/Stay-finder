@@ -102,7 +102,6 @@ const CheckOutCard = ({ listing }) => {
         notes: { bookingId: reservedBooking._id },
         theme: { color: "#3399cc" },
         handler: async function (response) {
-          toast("🔁 Verifying payment...");
           try {
             const check = await axios.get(
               `${process.env.NEXT_PUBLIC_SERVER_URL}/api/bookings/specific/${reservedBooking._id}`
@@ -110,7 +109,7 @@ const CheckOutCard = ({ listing }) => {
 
             if (check.data?.booking?.status === "confirmed") {
               setReservedBooking(check.data?.booking);
-              toast.success("🎉 Payment Successful! Redirecting...");
+              toast.success("🎉 Payment Successful!");
               router.push(`/booking/${reservedBooking._id}`);
             } else {
               toast.error("Payment made but booking not yet confirmed.");
@@ -129,7 +128,7 @@ const CheckOutCard = ({ listing }) => {
               );
 
               if (check.data?.booking?.status === "confirmed") {
-                toast.success("🎉 Payment Successful! Redirecting...");
+                toast.success("🎉 Payment Successful!");
                 router.push(`/booking/${reservedBooking._id}`);
               } else {
                 toast("❌ Payment was not completed.");

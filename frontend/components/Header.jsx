@@ -45,7 +45,9 @@ const Header = () => {
     <header className="py-4 px-2 flex items-center bg-gray-50 border-b border-b-gray-200">
       <div className="container mx-auto flex items-center justify-between">
         {/* Logo */}
-        <Image src={HeaderLogo} alt="Stay Finder Logo" className="h-10 w-auto" />
+        <Link href={"/"}>
+        <Image src={HeaderLogo} alt="Stay Finder Logo" className="h-8 md:h-10 w-auto" />
+        </Link>
 
         <div className="flex items-center gap-4">
           <SignedOut>

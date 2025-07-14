@@ -35,7 +35,7 @@ const SearchBox = () => {
   };
 
   return (
-    <Card className="bg-blue-50 w-full">
+    <Card className=" bg-blue-50 md:bg-white/30 backdrop-blur-lg w-full ">
       <CardContent className="flex flex-col gap-4 p-4 w-full">
         {/* Location */}
         <div className="space-y-2">

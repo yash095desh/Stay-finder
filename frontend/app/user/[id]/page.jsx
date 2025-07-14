@@ -55,7 +55,7 @@ const Page = () => {
   return (
     <div className="max-w-6xl mx-auto py-10 px-4 grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* Bookings */}
-      <div className="md:col-span-2">
+      <div className="md:col-span-2 order-2">
         <h3 className="text-lg font-semibold mb-4">Your Bookings</h3>
         {loading ? (
           <div className="space-y-3">
@@ -91,7 +91,7 @@ const Page = () => {
       </div>
 
       {/* User Profile */}
-      <Card className="h-fit">
+      <Card className="h-fit order-1">
         <CardContent className="flex flex-col items-center gap-4 p-6">
           <Avatar className="w-20 h-20">
             <AvatarImage src={user.imageUrl} />

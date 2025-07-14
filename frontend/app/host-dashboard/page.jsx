@@ -46,7 +46,6 @@ import { format } from "date-fns";
 import { useAuth } from "@clerk/nextjs";
 
 const Page = () => {
-  const [viewMode, setViewMode] = useState("month");
   const [selectedListingId, setSelectedListingId] = useState("");
   const [summary, setSummary] = useState({
     totalListings: [],
@@ -128,36 +127,36 @@ const Page = () => {
     <div className="max-w-6xl mx-auto py-10 px-4 space-y-8">
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="p-4 flex items-center justify-between">
-          <Home className="w-6 h-6 text-blue-600" />
-          <div className="text-center">
-            <h4 className="text-sm text-muted-foreground">Total Listings</h4>
-            <p className="text-2xl font-bold">
+        <Card className="p-3 sm:p-4 flex items-center gap-1 justify-between">
+          <div className=" flex items-center gap-2">
+            <Home className="w-6 h-6 text-blue-600" />
+            <h4 className="text-muted-foreground">Total Listings</h4>
+          </div>
+            <p className="text-2xl font-bold text-center">
               {summary?.totalListings.length}
             </p>
-          </div>
         </Card>
-        <Card className="p-4 flex items-center justify-between">
+        <Card className=" p-3 sm:p-4 flex items-center gap-1 justify-between">
+          <div className="flex items-center gap-2">
           <CalendarCheck className="w-6 h-6 text-green-600" />
-          <div className="text-center">
-            <h4 className="text-sm text-muted-foreground">Upcoming Bookings</h4>
-            <p className="text-2xl font-bold">
+            <h4 className=" text-muted-foreground">Upcoming Bookings</h4>
+          </div>
+            <p className="text-2xl font-bold text-center">
               {summary?.upcomingBookings.length}
             </p>
-          </div>
         </Card>
-        <Card className="p-4 flex items-center justify-between">
+        <Card className=" p-3 sm:p-4 flex items-center gap-1 justify-between">
+          <div className="flex items-center gap-2">
           <IndianRupee className="w-6 h-6 text-yellow-600" />
-          <div className="text-center">
-            <h4 className="text-sm text-muted-foreground">Total Earnings</h4>
-            <p className="text-2xl font-bold">₹{summary?.totalEarnings}</p>
+            <h4 className="text-muted-foreground">Total Earnings</h4>
           </div>
+            <p className="text-2xl font-bold text-center">₹{summary?.totalEarnings}</p>
         </Card>
       </div>
 
       {/* Chart */}
-      <Card className="p-6 space-y-4">
-        <div className="flex items-center justify-between">
+      <Card className="py-6 px-2 md:p-6 space-y-4">
+        <div className="flex flex-col md:flex-row items-center justify-between">
           <h4 className="text-lg font-semibold">Bookings Over Time</h4>
           <Select
             value={selectedListingId}
@@ -202,11 +201,11 @@ const Page = () => {
             {summary?.totalListings.map((listing) => (
               <div
                 key={listing._id}
-                className="relative border bg-white hover:shadow-md transition p-3 rounded-lg group"
+                className="relative border bg-white hover:shadow-md transition p-3 rounded-lg group flex items-center gap-1"
               >
                 <Link href={`/listing/${listing._id}`}>
                   <div>
-                    <p className="font-medium text-blue-900">
+                    <p className="font-medium text-blue-900 tracking-tighter text-sm sm:text-base">
                       {listing.title}
                     </p>
                     <p className="text-sm text-gray-600">

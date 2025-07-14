@@ -57,7 +57,7 @@ const Page = () => {
       feedback:
         "Felt like home away from home. Spacious rooms and amazing amenities. Highly recommended!",
     },
-  ]
+  ];
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -79,7 +79,6 @@ const Page = () => {
     if (id) fetchListing();
   }, [id]);
 
-
   if (loading) {
     return (
       <div className="w-full flex items-center justify-center my-30">
@@ -95,8 +94,8 @@ const Page = () => {
   }
 
   return (
-    <div className="my-10  ">
-      <h1 className="text-3xl font-bold tracking-tight mb-4">
+    <div className="my-10 px-2">
+      <h1 className=" text-2xl md:text-3xl font-bold tracking-tight mb-4">
         {listing?.title}
       </h1>
 
@@ -121,8 +120,8 @@ const Page = () => {
         </Carousel>
       )}
 
-      <div className="grid grid-cols-3 gap-4 ">
-        <div className=" col-span-2 flex flex-col gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-2 flex flex-col gap-6">
           <div className="mt-6 space-y-4">
             <h1 className="text-xl font-semibold tracking-tight">
               Stays Unit in {listing?.location?.address},{" "}
@@ -165,7 +164,7 @@ const Page = () => {
             </div>
           </div>
 
-          <div className="text-gray-700 text-lg tracking-tight flex items-center gap-1 py-4 border-b border-b-gray-200">
+          <div className="text-gray-700 md:text-lg tracking-tight flex items-center gap-1 py-4 border-b border-b-gray-200">
             {listing?.description}
           </div>
           <div className=" py-4 border-b border-b-gray-200 flex flex-col gap-2">
@@ -226,8 +225,8 @@ const Page = () => {
             </div>
           </div>
         </div>
-        <div>
-            <CheckOutCard listing={listing}/>
+        <div className="md:col-span-1 px-4 md:px-0 relative md:sticky md:top-28 h-fit">
+          <CheckOutCard listing={listing} />
         </div>
       </div>
     </div>

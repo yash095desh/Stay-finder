@@ -18,17 +18,22 @@ router.get("/summary/:userId", async (req, res) => {
 
     const bookings = await Booking.find({
       listingId: { $in: listings.map((l) => l._id) },
-      startDate: { $gte: new Date() },
     })
     .populate("userId")
     .populate("listingId");
 
     const totalEarnings = bookings.reduce((sum, b) => sum + (b.totalPrice || 0), 0);
 
+    const upcomingBookings = bookings
+    .filter((b) => new Date(b.startDate) >= new Date())
+    .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+
+
+
     res.status(200).json({
       success: true,
       totalListings: listings,
-      upcomingBookings: bookings,
+      upcomingBookings,
       totalEarnings,
     });
   } catch (error) {
