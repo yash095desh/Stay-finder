@@ -107,7 +107,6 @@ function CreateListingPage() {
         availableFrom: data.availableFrom,
         availableTo: data.availableUpto,
         images: imageUrls,
-        // hostId: getCurrentUserId(), // Add if available
       };
 
       console.log("Payload to backend:", payload);
@@ -117,10 +116,9 @@ function CreateListingPage() {
       if(response.data.success){
         console.log("Listing Created",response?.data?.listing)
         toast.success("Listing Created !")
+        router.push("/host-dashboard")
       }
 
-      // Send to your backend here (e.g., using axios.post)
-      // await axios.post("/api/listings", payload);
     } catch (error) {
       console.log("Error in creating listing", error);
     }
@@ -151,13 +149,13 @@ function CreateListingPage() {
 
   return (
     <div className="flex justify-center">
-      <Card className="w-full max-w-4xl my-14">
+      <Card className="w-full max-w-4xl my-14 ">
         <CardHeader className="mb-4">
-          <CardTitle className="text-4xl font-extrabold text-primary mb-2 tracking-tighter">
+          <CardTitle className=" text-2xl md:text-4xl font-extrabold text-primary mb-2 tracking-tighter">
             Create New Listing
           </CardTitle>
-          <CardDescription className="text-muted-foreground font-medium text-lg tracking-tight leading-snug">
-            Use this form to share your space with others. <br />
+          <CardDescription className="text-muted-foreground font-medium md:text-lg tracking-tight leading-snug">
+            Use this form to share your space with others. <br className=" hidden md:block" />
             Once submitted, your property will be visible to users looking for a
             place to stay.
           </CardDescription>

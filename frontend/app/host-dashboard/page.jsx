@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { Home, CalendarCheck, IndianRupee, MoreVertical } from "lucide-react";
+import { Home, CalendarCheck, IndianRupee, MoreVertical, Plus } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -197,6 +197,14 @@ const Page = () => {
         {/* Listings */}
         <Card className="p-4 bg-blue-50">
           <h4 className="text-lg font-semibold mb-4">My Listings</h4>
+          <Button
+            size="sm"
+            className="bg-blue-600 text-white hover:bg-blue-700 flex items-center "
+            onClick={() => router.push("/listing/create-new")}
+          >
+            <Plus className="w-4 h-4 mr-1" />
+            Create New
+          </Button>
           <div className="space-y-3">
             {summary?.totalListings.map((listing) => (
               <div

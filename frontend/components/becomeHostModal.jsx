@@ -33,7 +33,7 @@ export const BecomeHostModal = ({ open, onOpenChange, user, onSuccess }) => {
         toast("You are now a host!");
         onSuccess();
         onOpenChange(false);
-        router.push("/dashboard")
+        router.push("/host-dashboard")
       }
     } catch (err) {
       console.error(err);
